@@ -23,12 +23,10 @@ jobs:
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
-          pip install "pydantic<2.10" requests psycopg2-binary prefect
+          pip install requests psycopg2-binary
 
       - name: Ejecutar Pipeline ETL
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          PREFECT_API_URL: ""
-          PREFECT_SERVER_ALLOW_EPHEMERAL_MODE: "true"
         run: |
           python pipeline/main_flow.py
