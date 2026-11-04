@@ -4,9 +4,8 @@ on:
   push:
     branches: [ "main" ]
   schedule:
-    # Ejecuta el pipeline automáticamente todos los días a las 00:00 UTC
     - cron: '0 0 * * *'
-  workflow_dispatch: # Permite ejecutar el pipeline manualmente desde GitHub
+  workflow_dispatch:
 
 jobs:
   run-etl:
@@ -24,15 +23,12 @@ jobs:
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then
-            python -m pip install -r requirements.txt
-          else
-            echo "No requirements.txt found; skipping dependency installation."
-          fi
+          pip install "pydantic<2.10" requests psycopg2-binary prefect
 
       - name: Ejecutar Pipeline ETL
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PREFECT_API_URL: ""
+          PREFECT_SERVER_ALLOW_EPHEMERAL_MODE: "true"
         run: |
-          test -f pipeline/main_flow.py || { echo "pipeline/main_flow.py was not found."; exit 1; }
           python pipeline/main_flow.py
